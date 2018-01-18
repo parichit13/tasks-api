@@ -4,7 +4,7 @@ from flask_marshmallow import Marshmallow
 from flask.ext.heroku import Heroku
 
 app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:start@localhost/todotemp'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:start@localhost/temp2'
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -32,9 +32,8 @@ todos_schema = TodoSchema(many=True)
 # endpoint to create new task
 @app.route("/todo", methods=["POST"])
 def add_todo():
-    title = request.json['todo']
+    title = request.json['title']
     # email = request.json['email']
-
     new_todo = Todo(title)
 
     db.session.add(new_todo)
