@@ -10,77 +10,76 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 
-class User(db.Model):
+class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120), unique=True)
+    title = db.Column(db.String, nullable=False)
+    complete = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, email):
-        self.username = username
-        self.email = email
+    def __init__(self, title):
+        self.title = title
 
 
-class UserSchema(ma.Schema):
+class TodoSchema(ma.Schema):
     class Meta:
         # Fields to expose
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'title', 'complete')
 
 
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
+todo_schema = TodoSchema()
+todos_schema = TodoSchema(many=True)
 
 
-# endpoint to create new user
-@app.route("/user", methods=["POST"])
-def add_user():
-    username = request.json['username']
-    email = request.json['email']
+# endpoint to create new task
+@app.route("/todo", methods=["POST"])
+def add_todo():
+    title = request.json['todo']
+    # email = request.json['email']
 
-    new_user = User(username, email)
+    new_todo = Todo(title)
 
-    db.session.add(new_user)
+    db.session.add(new_todo)
     db.session.commit()
 
-    return user_schema.jsonify(new_user)
+    return todo_schema.jsonify(new_todo)
 
 
-# endpoint to show all users
-@app.route("/user", methods=["GET"])
-def get_user():
-    all_users = User.query.all()
-    result = users_schema.dump(all_users)
+# endpoint to show all tasks
+@app.route("/todo", methods=["GET"])
+def get_todo():
+    all_todos = Todo.query.all()
+    result = todos_schema.dump(all_todos)
     return jsonify(result.data)
 
 
-# endpoint to get user detail by id
-@app.route("/user/<id>", methods=["GET"])
-def user_detail(id):
-    user = User.query.get(id)
-    return user_schema.jsonify(user)
+# endpoint to get task detail by id
+@app.route("/todo/<id>", methods=["GET"])
+def todo_detail(id):
+    todo = Todo.query.get(id)
+    return todo_schema.jsonify(todo)
 
 
-# endpoint to update user
-@app.route("/user/<id>", methods=["PUT"])
-def user_update(id):
-    user = User.query.get(id)
-    username = request.json['username']
-    email = request.json['email']
+# endpoint to update a task
+@app.route("/todo/<id>", methods=["PUT"])
+def todo_update(id):
+    todo = Todo.query.get(id)
+    title = request.json['title']
+    complete = request.json['complete']
 
-    user.email = email
-    user.username = username
+    todo.title = title
+    todo.complete = complete
 
     db.session.commit()
-    return user_schema.jsonify(user)
+    return todo_schema.jsonify(todo)
 
 
-# endpoint to delete user
-@app.route("/user/<id>", methods=["DELETE"])
-def user_delete(id):
-    user = User.query.get(id)
-    db.session.delete(user)
+# endpoint to delete a task
+@app.route("/todo/<id>", methods=["DELETE"])
+def todo_delete(id):
+    todo = Todo.query.get(id)
+    db.session.delete(todo)
     db.session.commit()
 
-    return user_schema.jsonify(user)
+    return todo_schema.jsonify(todo)
 
 
 if __name__ == '__main__':
