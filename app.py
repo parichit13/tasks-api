@@ -30,6 +30,9 @@ class TodoSchema(ma.Schema):
 todo_schema = TodoSchema()
 todos_schema = TodoSchema(many=True)
 
+@app.route("/")
+def welcome():
+    return "Welcome to Tasks API"
 
 # endpoint to create new task
 @app.route("/todo", methods=["POST"])
