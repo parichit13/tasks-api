@@ -16,7 +16,7 @@ The project is deployed on heroku with the base link: `https://fltasks.herokuapp
 
 The Task object has the following definition
 
-```json
+```javascript
 {
   id: number,
   title: string,
